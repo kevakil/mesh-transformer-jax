@@ -246,10 +246,19 @@ def arrays_to_sequences(token_list_iterable, sequence_length=2049):
 
 
 def chunk_and_finalize(arrays, args, encoder):
+    print('line 250:', len(arrays))
+    #print(encoder.decode(arrays[0]))
+    #print('blah')
+    #print(encoder.decode(arrays[1]))
     sequences = list(arrays_to_sequences(arrays))
-
+    print(len(sequences))
     full_seqs, trailing_data = sequences[:-1], sequences[-1]
 
+    #keyan
+    #print(encoder.decode(trailing_data))
+    
+    
+    
     if args.min_unique_tokens > 0:
         full_seqs = list(enforce_min_unique(full_seqs, args.min_unique_tokens, encoder, args.verbose))
 
