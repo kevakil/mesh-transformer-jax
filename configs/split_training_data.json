@@ -29,6 +29,8 @@
     "pile": "split_training_data.val.index",
     "owt": "openwebtext2_new_inputs.val.index"
   },
+  "eval_harness_tasks": [
+  ],
 
   "val_batches": 53,
   "val_every": 99999999999,
