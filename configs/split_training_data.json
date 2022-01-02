@@ -22,12 +22,10 @@
   "tpu_size": 8,
 
   "bucket": "aarrfsf",
-  "model_dir": "~/mesh-transformer-jax/split_training_data_model_dir/",
+  "model_dir": "/home/keyan/mesh-transformer-jax/split_training_data_model_dir/",
 
-  "train_set": "~/mesh-transformer-jax/data/split_training_data.train.index",
+  "train_set": "/home/keyan/mesh-transformer-jax/data/split_training_data.train.index",
   "val_set": {
-    "pile": "~/mesh-transformer-jax/data/split_training_data.val.index",
-    "owt": "~/mesh-transformer-jax/data/openwebtext2_new_inputs.val.index"
   },
   "eval_harness_tasks": [
   ],
