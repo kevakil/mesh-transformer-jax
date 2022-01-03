@@ -8,6 +8,7 @@ import optax
 
 import wandb
 from tqdm import tqdm
+from datetime import datetime
 
 
 from mesh_transformer import util
@@ -259,7 +260,11 @@ if __name__ == "__main__":
         network = CausalTransformer(params)
 
         if initial_ckpt_state_path:
-            print("loading network")
+            now = datetime.now() # current date and time
+
+            network_load_start_time = now.strftime("%H:%M:%S")
+
+            print("loading network started at", network_load_start_time)
             if fine_tuning:
                 # get the scheduler step stored in the just-initialized optimizer
                 # should be zero
