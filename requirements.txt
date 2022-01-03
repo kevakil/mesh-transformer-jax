@@ -27,6 +27,7 @@ cryptography==36.0.1
 Cython==0.29.26
 DataProperty==0.54.2
 datasets==1.15.1
+datetime
 Deprecated==1.2.13
 dill==0.3.4
 dm-haiku @ git+https://github.com/deepmind/dm-haiku@7ddb4776761a7220031c6b323fa6f797bb02f75c
