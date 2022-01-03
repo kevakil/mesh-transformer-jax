@@ -24,7 +24,8 @@ BUT theres no 0.2.12 in https://storage.googleapis.com/jax-releases/libtpu_relea
 this is because it needs to use an older version of tensorflow or else for some reason the tpu will run out of memory 
 - see this https://github.com/googlecolab/colabtools/issues/1470 
 - pip install tensorflow~=2.2.0 tensorflow_gcs_config~=2.2.0
-
+- ACTUALLY this is not true at all. still doesnt work and i dont know why, but it doesnt matter because the weights have already been created, and i can slim them and use them in https://colab.research.google.com/github/kingoflolz/mesh-transformer-jax/blob/master/colab_demo.ipynb#scrollTo=n7xAFw-LOYfe
+- i modded it so i can do it in https://colab.research.google.com/drive/1KPbT52Q7ziYvdXTJVBQtk7J2Qs3Crq00#scrollTo=aO1UXepF-0Uq
 
 # Table of contents
 1. [Mesh Transformer JAX](#mesh-transformer-jax)
