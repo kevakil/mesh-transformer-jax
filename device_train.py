@@ -136,7 +136,7 @@ def eval_step(network, data):
 if __name__ == "__main__":
     args = parse_args()
     params = json.load(open(args.config))
-
+    print("params:", str(params))
     gradient_accumulation_steps = params.get("gradient_accumulation_steps", 1)
     per_replica_batch = params["per_replica_batch"]
     cores_per_replica = params["cores_per_replica"]
