@@ -1,5 +1,8 @@
 # FUCKING HELL
+## To fix stuff like "TPU_Engine_blahablah not found:
 pip install "jax[tpu]>=0.2.16" -f https://storage.googleapis.com/jax-releases/libtpu_releases.html
+## To fix "import optax" -> optax not found:
+???
 
 
 # Table of contents
