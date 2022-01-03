@@ -24,7 +24,7 @@
   "bucket": "aarrfsf",
   "model_dir": "/home/keyan/mesh-transformer-jax/split_training_data_model_dir/",
 
-  "train_set": "/home/keyan/mesh-transformer-jax/data/split_training_data.train.index",
+  "train_set": "split_training_data.train.index",
   "val_set": {
   },
   "eval_harness_tasks": [
