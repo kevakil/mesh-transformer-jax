@@ -3,16 +3,16 @@
 ### https://cloud.google.com/tpu/docs/jax-quickstart-tpu-vm#install_jax_on_your_cloud_tpu_vm
 ### https://stackoverflow.com/questions/68306484/not-able-to-import-python-package-jax-in-google-tpu
 
-pip install "jax[tpu]>=0.2.16" -f https://storage.googleapis.com/jax-releases/libtpu_releases.html
+- pip install "jax[tpu]>=0.2.16" -f https://storage.googleapis.com/jax-releases/libtpu_releases.html
 
 ## To fix "import optax" -> optax not found:
-pip install --upgrade pip
-pip install -r requirements.txt
+- pip install --upgrade pip
+- pip install -r requirements.txt
 
 ## SO Full order might be
-pip install --upgrade pip
-pip install "jax[tpu]>=0.2.16" -f https://storage.googleapis.com/jax-releases/libtpu_releases.html
-pip install -r requirements.txt
+- pip install --upgrade pip
+- pip install "jax[tpu]>=0.2.16" -f https://storage.googleapis.com/jax-releases/libtpu_releases.html
+- pip install -r requirements.txt
 
 
 # weird
