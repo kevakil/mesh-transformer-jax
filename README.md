@@ -20,6 +20,12 @@ they say to use this https://jax.readthedocs.io/en/latest/changelog.html#jax-0-2
 so maybe do this pip install "jax[tpu]>=0.2.12" -f https://storage.googleapis.com/jax-releases/libtpu_releases.html
 BUT theres no 0.2.12 in https://storage.googleapis.com/jax-releases/libtpu_releases.html so wtf
 
+# use requirements_convert_to_hf.txt to convert to hf.txt
+this is because it needs to use an older version of tensorflow or else for some reason the tpu will run out of memory 
+- see this https://github.com/googlecolab/colabtools/issues/1470 
+- pip install tensorflow~=2.2.0 tensorflow_gcs_config~=2.2.0
+
+
 # Table of contents
 1. [Mesh Transformer JAX](#mesh-transformer-jax)
     1. [Updates](#updates)
