@@ -65,8 +65,6 @@ importlib-resources==5.4.0
 iniconfig==1.1.1
 invoke==1.6.0
 itsdangerous==1.1.0
-jax==0.2.26
-jaxlib==0.1.75
 jieba==0.42.1
 Jinja2==2.11.3
 jmp==0.0.2
