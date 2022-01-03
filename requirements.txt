@@ -33,7 +33,6 @@ dill==0.3.4
 dm-haiku @ git+https://github.com/deepmind/dm-haiku@7ddb4776761a7220031c6b323fa6f797bb02f75c
 dm-tree==0.1.6
 docker-pycreds==0.4.0
-dyNET38==2.1
 einops==0.3.2
 fabric==2.6.0
 filelock==3.4.2
