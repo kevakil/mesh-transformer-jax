@@ -1,3 +1,4 @@
 *.pyc
 *.pprof
 /ckpt/
+venv/
