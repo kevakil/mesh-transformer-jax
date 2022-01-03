@@ -15,6 +15,11 @@ pip install "jax[tpu]>=0.2.16" -f https://storage.googleapis.com/jax-releases/li
 pip install -r requirements.txt
 
 
+# weird
+they say to use this https://jax.readthedocs.io/en/latest/changelog.html#jax-0-2-12-april-1-2021
+so maybe do this pip install "jax[tpu]>=0.2.12" -f https://storage.googleapis.com/jax-releases/libtpu_releases.html
+BUT theres no 0.2.12 in https://storage.googleapis.com/jax-releases/libtpu_releases.html so wtf
+
 # Table of contents
 1. [Mesh Transformer JAX](#mesh-transformer-jax)
     1. [Updates](#updates)
