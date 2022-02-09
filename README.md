@@ -11,8 +11,13 @@
 
 ## SO Full order might be
 - pip install --upgrade pip
+- pip install virtualenv
+- virtualenv venv
+- source ./venv/bin/activate
 - pip install "jax[tpu]>=0.2.16" -f https://storage.googleapis.com/jax-releases/libtpu_releases.html
 - pip install -r requirements.txt
+- and maybe:
+- pip install jax==0.2.12
 
 
 # weird
