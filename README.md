@@ -18,11 +18,10 @@
 - pip install --upgrade pip
 - pip install "jax[tpu]>=0.2.16" -f https://storage.googleapis.com/jax-releases/libtpu_releases.html
 - pip install -r requirements.txt
-- and maybe:
-- pip install jax==0.2.12
+- wandb login
+- ./train.sh
 
-
-# weird
+# they also say to use this
 they say to use this https://jax.readthedocs.io/en/latest/changelog.html#jax-0-2-12-april-1-2021
 so maybe do this pip install "jax[tpu]>=0.2.12" -f https://storage.googleapis.com/jax-releases/libtpu_releases.html
 BUT theres no 0.2.12 in https://storage.googleapis.com/jax-releases/libtpu_releases.html so wtf
