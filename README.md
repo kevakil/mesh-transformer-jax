@@ -1,4 +1,4 @@
-# FUCKING HELL
+# Garbage
 ## To fix stuff like "TPURandomClass_Engine_blahablah not found:
 ### https://cloud.google.com/tpu/docs/jax-quickstart-tpu-vm#install_jax_on_your_cloud_tpu_vm
 ### https://stackoverflow.com/questions/68306484/not-able-to-import-python-package-jax-in-google-tpu
