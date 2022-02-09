@@ -36,6 +36,6 @@
   "keep_every": 10000,
 
   "name": "transcripts_model",
-  "wandb_project": "transcripts-mesh-transformer-jax",
+  "wandb_project": "gpt-j6b-transcripts",
   "comment": ""
 }
