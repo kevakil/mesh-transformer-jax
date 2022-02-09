@@ -9,15 +9,15 @@
 
   "seq": 2048,
   "cores_per_replica": 8,
-  "per_replica_batch": 1,
+  "per_keep_everyreplica_batch": 1,
   "gradient_accumulation_steps": 32,
 
-  "warmup_steps": 2,
-  "anneal_steps": 25,
+  "warmup_steps": 32,
+  "anneal_steps": 400,
   "lr": 4e-5,
   "end_lr": 6e-6,
   "weight_decay": 0.1,
-  "total_steps": 27,
+  "total_steps": 432,
 
   "tpu_size": 8,
 
@@ -32,10 +32,10 @@
 
   "val_batches": 846,
   "val_every": 99999999999,
-  "ckpt_every": 500,
-  "keep_every": 10000,
+  "ckpt_every": 27,
+  "keep_every": 27,
 
-  "name": "transcripts_model",
+  "name": "transcripts_model-16-epochs",
   "wandb_project": "gpt-j6b-transcripts",
   "comment": ""
 }
