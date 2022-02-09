@@ -22,7 +22,7 @@
   "tpu_size": 8,
 
   "bucket": "aarrfsf",
-  "model_dir": "/transcripts/",
+  "model_dir": "/home/keyan/mesh-transformer-jax/split_training_data_model_dir/",
 
   "train_set": "split_training_data.train.index",
   "val_set": {
