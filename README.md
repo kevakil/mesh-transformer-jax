@@ -9,7 +9,8 @@
 - pip install --upgrade pip
 - pip install -r requirements.txt
 
-## SO Full order might be
+# IGNORE, just install requirements one by one...annoying but it works
+## ~SO Full order might be~
 - pip install virtualenv
 - git clone https://github.com/kevakil/mesh-transformer-jax
 - cd mesh-transformer-jax
