@@ -12,6 +12,8 @@
 ## SO Full order might be
 - pip install --upgrade pip
 - pip install virtualenv
+- git clone https://github.com/kevakil/mesh-transformer-jax
+- cd mesh-transformer-jax
 - virtualenv venv
 - source ./venv/bin/activate
 - pip install "jax[tpu]>=0.2.16" -f https://storage.googleapis.com/jax-releases/libtpu_releases.html
