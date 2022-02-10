@@ -83,6 +83,8 @@ def save(network, step, bucket, path, mp, aux=None, keep_n=3, delete_old=True):
     all_aux = meta.get("aux", {})
 
     while len(meta["checkpoints"]) > keep_n:
+        print('checkpoints:', len(meta['checkpoints']))
+        print('keep_n:', keep_n)
         ckpt_to_delete = meta["checkpoints"].pop(0)
 
         try:
