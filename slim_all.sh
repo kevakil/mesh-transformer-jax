@@ -1,9 +1,9 @@
-python3 slim_model.py --config configs/transcripts.json --ckpt-step 406
-python3 slim_model.py --config configs/transcripts.json --ckpt-step 379
-python3 slim_model.py --config configs/transcripts.json --ckpt-step 352
-python3 slim_model.py --config configs/transcripts.json --ckpt-step 325
-python3 slim_model.py --config configs/transcripts.json --ckpt-step 298
-python3 slim_model.py --config configs/transcripts.json --ckpt-step 271
+#python3 slim_model.py --config configs/transcripts.json --ckpt-step 406
+#python3 slim_model.py --config configs/transcripts.json --ckpt-step 379
+#python3 slim_model.py --config configs/transcripts.json --ckpt-step 352
+#python3 slim_model.py --config configs/transcripts.json --ckpt-step 325
+#python3 slim_model.py --config configs/transcripts.json --ckpt-step 298
+#python3 slim_model.py --config configs/transcripts.json --ckpt-step 271
 python3 slim_model.py --config configs/transcripts.json --ckpt-step 244
 python3 slim_model.py --config configs/transcripts.json --ckpt-step 217
 python3 slim_model.py --config configs/transcripts.json --ckpt-step 190
