@@ -29,6 +29,12 @@ def parse_args():
 def float_to_string(float_num):
     return str(round(float_num, 1))
 
+def findMiddle(input_list):
+    middle = float(len(input_list))/2
+    if middle % 2 != 0:
+        return input_list[int(middle - .5)]
+    else:
+        return (input_list[int(middle)], input_list[int(middle-1)])
 
 if __name__ == "__main__":
     args = parse_args()
@@ -103,8 +109,8 @@ if __name__ == "__main__":
         "Squidward: [says to himself] Open 24 hours a day. What a stupid idea. Who wants a Krabby Patty at 3 in the morning?\n[cuts to Patrick's bedroom.\nPatrick's alarm clock goes off.]\nPatrick: [turns off the alarm] Oh, boy! 3 A.M.! [whips out a Krabby Patty from under his blanket and starts to eat it; cuts back to The Krusty Krab]",
         "Nosferatu: [as a bat]",
         "<|endoftext|>\n"
-    ]
 
+    ]
 
     encoded_prompts = []
     for prompt in prompts:
@@ -118,8 +124,9 @@ if __name__ == "__main__":
         meta = json.load(f)
 
     # shit, i forgot, cloud objects are techinically not stored in directories, so this theoretically wouldnt work. still there doesnt seem to be a builtin for this on gcs and i have no idea why...
-    # anoying but it basically depends on the config file being right
-    ckpt_steps = [1] + list(range(total_steps, 0, -ckpt_every))
+    # annoying implementation because it depends on the config file being right
+    ckpt_steps = list(range(total_steps, 0, -ckpt_every))
+    ckpt_steps = list(findMiddle(ckpt_steps))
     print('chkpt steps', ckpt_steps)
 
     # sweep through checkpoints
@@ -141,9 +148,9 @@ if __name__ == "__main__":
 
             for tokens in encoded_prompts:
                 # sweep through temps, top_p
-                # this will produce wayyyy too many prompt-completions, but
-                for top_p_amount in np.arange(0, 1.1, 0.1):
-                    for temp_amount in np.arange(0, 2.1, 0.1):
+                # this might produce too many prompt-completions, do the math!
+                for top_p_amount in [0.5]: #[0.25, 0.5, 0.75]:# np.arange(0.2, 1.1, 0.2):
+                    for temp_amount in [1]: #[0.5, 1, 1.5]:#np.arange(0.2, 2.1, 0.2):
                         start = time.time()
 
                         provided_ctx = len(tokens)
@@ -154,7 +161,7 @@ if __name__ == "__main__":
                         length = np.ones(total_batch, dtype=np.uint32) * len(tokens)
 
                         print("~~~~~~~~~~~~~~~GENERATING~~~~~~~~~~~~~~~")
-                        output = network.generate(batched_tokens, length, pad_amount, {"top_p": np.ones(total_batch) * top_p_amount,
+                        output = network.generate(batched_tokens, length, pad_amount // 2, {"top_p": np.ones(total_batch) * top_p_amount,
                                                                         "temp": np.ones(total_batch) * temp_amount})
                         outfile_path = f"samples/ckpt-{ckpt_step}/temp-{float_to_string(temp_amount)}/top_p-{float_to_string(top_p_amount)}.txt"
 
