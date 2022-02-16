@@ -118,7 +118,7 @@ if __name__ == "__main__":
 
     # shit, i forgot, cloud objects are techinically not stored in directories, so this theoretically wouldnt work. still there doesnt seem to be a builtin for this on gcs and i have no idea why...
     # anoying but it basically depends on the config file being right
-    ckpt_steps = [1] + range(total_steps, 0, -ckpt_every)
+    ckpt_steps = [1] + list(range(total_steps, 0, -ckpt_every))
     print('chkpt steps', ckpt_steps)
 
     # sweep through checkpoints
