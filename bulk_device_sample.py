@@ -99,7 +99,7 @@ if __name__ == "__main__":
         'Gary:',
         'Squidward: Another day, another migraine',
         'Shrek: What are you doing in my swamp?!',
-        "Patrick: I\'m gunna lick your juicy asshole Spongebob!\nSpongebob: [on the verge of orgasm] Aww fuck yeah, Pat! Lick daddy\'s bussy like you mean it!\nSquidward: [shocked]"
+        "Patrick: I\'m gunna lick your juicy asshole Spongebob!\nSpongebob: [on the verge of orgasm] Aww fuck yeah, Pat! Lick daddy\'s bussy like you mean it!\nSquidward: [shocked]",
         "[The next morning, Patrick and Squidward are at the gym. They are shocked to see Larry injecting steroids]",
         "[Patrick won't stop farting]\nSquidward: [unamused]",
         "[The night before the Fry Cook Games, Spongebob and Sandy are working on their deadlifts. Larry and Plankton, now best friends, enter the gym. Mr. Krab's advice is still stuck in Spongebob's head. Patrick and Old Man Jenkins watch using their binoculars. Patrick's binoculars are backwards]",
@@ -125,6 +125,7 @@ if __name__ == "__main__":
     ckpt_steps = [total_steps] + list(range(total_steps+1, 0, -ckpt_every))[1:]
 
     # i change this line to manually perform a binary search for the right number of epochs to use (balance between correctness and not overfitting too much)
+    ckpt_steps = ckpt_steps[:len(ckpt_steps) // 2]
     ckpt_steps = [findMiddle(ckpt_steps)]
     print('chkpt steps', ckpt_steps)
 
