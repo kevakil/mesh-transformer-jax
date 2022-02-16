@@ -16,6 +16,7 @@ from smart_open import open
 from mesh_transformer.util import clip_by_global_norm
 
 from google.cloud import storage
+import os
 
 def parse_args():
     # Parse command line arguments
@@ -155,9 +156,12 @@ if __name__ == "__main__":
                         print("~~~~~~~~~~~~~~~GENERATING~~~~~~~~~~~~~~~")
                         output = network.generate(batched_tokens, length, pad_amount, {"top_p": np.ones(total_batch) * top_p_amount,
                                                                         "temp": np.ones(total_batch) * temp_amount})
-                        outfile_path = f"samples/{ckpt_step}/temp-{float_to_string(temp_amount)}__top_p-{float_to_string(top_p_amount)}.txt"
+                        outfile_path = f"samples/ckpt-{ckpt_step}/temp-{float_to_string(temp_amount)}/top_p-{float_to_string(top_p_amount)}.txt"
 
                         orig_input = tokenizer.decode(tokens)
+
+                        os.makedirs(os.path.dirname(outfile_path), exist_ok=True)
+
                         with open(outfile_path, 'w') as out:
                             out.write(orig_input + output)
 
