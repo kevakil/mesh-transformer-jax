@@ -173,4 +173,4 @@ if __name__ == "__main__":
                                 out.write(orig_input + outtext +"\n\n===\n\n")
 
                         print(f"completion done in {time.time() - start:06}s")
-
+                        print('writing to', outfile_path)
