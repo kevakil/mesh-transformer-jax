@@ -14,7 +14,8 @@ import transformers
 from smart_open import open
 
 from mesh_transformer.util import clip_by_global_norm
-import glob
+
+from google.cloud import storage
 
 def parse_args():
     # Parse command line arguments
@@ -26,6 +27,7 @@ def parse_args():
 
 def float_to_string(float_num):
     return str(round(float_num, 1))
+
 
 if __name__ == "__main__":
     args = parse_args()
@@ -45,6 +47,8 @@ if __name__ == "__main__":
     n_vocab = params["n_vocab"]
     seq = params["seq"]
     norm = params["norm"]
+    total_steps = params["total_steps"]
+    ckpt_every = params["ckpt_every"]
 
     params["sampler"] = nucleaus_sample
     opt = optax.chain(
@@ -112,10 +116,10 @@ if __name__ == "__main__":
     with open(f"gs://{bucket}/{model_dir}/meta.json", "r") as f:
         meta = json.load(f)
 
-    checkpoint_dirs = glob.glob(f"gs://{bucket}/{model_dir}/step_*")
-    print('chkpt dirs', checkpoint_dirs)
-    ckpt_steps = [ckpt_dir.split('step_').pop()[:-1] for ckpt_dir in checkpoint_dirs]
-    print('chkpt dirs', ckpt_steps)
+    # shit, i forgot, cloud objects are techinically not stored in directories, so this theoretically wouldnt work. still there doesnt seem to be a builtin for this on gcs and i have no idea why...
+    # anoying but it basically depends on the config file being right
+    ckpt_steps = [1] + range(total_steps, 0, -ckpt_every)
+    print('chkpt steps', ckpt_steps)
 
     # sweep through checkpoints
     for ckpt_step in ckpt_steps:
