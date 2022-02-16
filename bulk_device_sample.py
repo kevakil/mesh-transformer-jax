@@ -30,6 +30,7 @@ def float_to_string(float_num):
     return str(round(float_num, 1))
 
 def findMiddle(input_list):
+    print(input_list)
     return input_list[len(input_list)//2]
 
 if __name__ == "__main__":
@@ -142,38 +143,40 @@ if __name__ == "__main__":
             network.state = network.move_xmap(network.state, np.zeros(local_shards))
 
 
-            for tokens in encoded_prompts:
-                # sweep through temps, top_p
-                # this might produce too many prompt-completions, do the math!
-                for top_p_amount in [0.5]: #[0.25, 0.5, 0.75]:# np.arange(0.2, 1.1, 0.2):
-                    for temp_amount in [1]: #[0.5, 1, 1.5]:#np.arange(0.2, 2.1, 0.2):
-                        start = time.time()
+            # sweep through temps, top_p
+            # this might produce too many prompt-completions, do the math!
+            for top_p_amount in [0.5]: #[0.25, 0.5, 0.75]:# np.arange(0.2, 1.1, 0.2):
+                for temp_amount in [1]: #[0.5, 1, 1.5]:#np.arange(0.2, 2.1, 0.2):
+                    outfile_path = f"samples/ckpt-{ckpt_step}/temp-{float_to_string(temp_amount)}/top_p-{float_to_string(top_p_amount)}.txt"
+                    text = ''
+                    with open(outfile_path, 'w') as out:
+                        for tokens in encoded_prompts:
+                            start = time.time()
 
-                        provided_ctx = len(tokens)
-                        pad_amount = seq - provided_ctx
+                            provided_ctx = len(tokens)
+                            pad_amount = seq - provided_ctx
 
-                        padded_tokens = np.pad(tokens, ((pad_amount, 0),)).astype(np.uint32)
-                        batched_tokens = np.array([padded_tokens] * total_batch)
-                        length = np.ones(total_batch, dtype=np.uint32) * len(tokens)
+                            padded_tokens = np.pad(tokens, ((pad_amount, 0),)).astype(np.uint32)
+                            batched_tokens = np.array([padded_tokens] * total_batch)
+                            length = np.ones(total_batch, dtype=np.uint32) * len(tokens)
 
-                        print("~~~~~~~~~~~~~~~GENERATING~~~~~~~~~~~~~~~")
-                        output = network.generate(batched_tokens, length, pad_amount // 2, {"top_p": np.ones(total_batch) * top_p_amount,
-                                                                        "temp": np.ones(total_batch) * temp_amount})
-                        outfile_path = f"samples/ckpt-{ckpt_step}/temp-{float_to_string(temp_amount)}/top_p-{float_to_string(top_p_amount)}.txt"
+                            print("~~~~~~~~~~~~~~~GENERATING~~~~~~~~~~~~~~~")
+                            output = network.generate(batched_tokens, length, pad_amount // 2, {"top_p": np.ones(total_batch) * top_p_amount,
+                                                                            "temp": np.ones(total_batch) * temp_amount})
 
-                        orig_input = tokenizer.decode(tokens)
+                            orig_input = tokenizer.decode(tokens)
 
-                        os.makedirs(os.path.dirname(outfile_path), exist_ok=True)
+                            os.makedirs(os.path.dirname(outfile_path), exist_ok=True)
 
 
-                        with open(outfile_path, 'w') as out:
                             for idx, o in enumerate(output[1][0][:, :, 0]):
                                 outtext = repr(tokenizer.decode(o))
                                 print(f"sample {idx}: {outtext}")
                                 print(orig_input)
                                 print(" => ")
                                 print(outtext)
-                                out.write(orig_input + outtext +"\n\n===\n\n")
+                                text += orig_input + outtext +"\n\n===\n\n"
 
-                        print(f"completion done in {time.time() - start:06}s")
+                            print(f"completion done in {time.time() - start:06}s")
+                        out.write(text)
                         print('writing to', outfile_path)
