@@ -148,7 +148,7 @@ if __name__ == "__main__":
 
             # sweep through temps, top_p
             # this might produce too many prompt-completions, do the math!
-            for top_p_amount in [0.5]: #[0.25, 0.5, 0.75]:# np.arange(0.2, 1.1, 0.2):
+            for top_p_amount in [0.9]: #[0.25, 0.5, 0.75]:# np.arange(0.2, 1.1, 0.2):
                 for temp_amount in [0.5, 1, 1.5]:#np.arange(0.2, 2.1, 0.2):
                     outfile_path = f"samples/ckpt-{ckpt_step}/temp-{float_to_string(temp_amount)}/top_p-{float_to_string(top_p_amount)}.txt"
                     text = ''
