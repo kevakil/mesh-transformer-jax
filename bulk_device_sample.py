@@ -30,11 +30,7 @@ def float_to_string(float_num):
     return str(round(float_num, 1))
 
 def findMiddle(input_list):
-    middle = float(len(input_list))/2
-    if middle % 2 != 0:
-        return input_list[int(middle - .5)]
-    else:
-        return (input_list[int(middle)], input_list[int(middle-1)])
+    return input_list[len(input_list)//2]
 
 if __name__ == "__main__":
     args = parse_args()
@@ -125,7 +121,7 @@ if __name__ == "__main__":
 
     # shit, i forgot, cloud objects are techinically not stored in directories, so this theoretically wouldnt work. still there doesnt seem to be a builtin for this on gcs and i have no idea why...
     # annoying implementation because it depends on the config file being right
-    ckpt_steps = list(range(total_steps, 0, -ckpt_every))
+    ckpt_steps = [total_steps] + list(range(total_steps+1, 0, -ckpt_every))[1:]
     ckpt_steps = list(findMiddle(ckpt_steps))
     print('chkpt steps', ckpt_steps)
 
