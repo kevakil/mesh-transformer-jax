@@ -162,11 +162,15 @@ if __name__ == "__main__":
 
                         os.makedirs(os.path.dirname(outfile_path), exist_ok=True)
 
-                        with open(outfile_path, 'w') as out:
-                            out.write(orig_input + output)
 
-                        for idx, o in enumerate(output[1][0][:, :, 0]):
-                            print(f"sample {idx}: {repr(tokenizer.decode(o))}")
+                        with open(outfile_path, 'w') as out:
+                            for idx, o in enumerate(output[1][0][:, :, 0]):
+                                outtext = repr(tokenizer.decode(o))
+                                print(f"sample {idx}: {outtext}")
+                                print(orig_input)
+                                print(" => ")
+                                print(outtext)
+                                out.write(orig_input + outtext +"\n\n===\n\n")
 
                         print(f"completion done in {time.time() - start:06}s")
 
