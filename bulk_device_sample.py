@@ -14,7 +14,7 @@ import transformers
 from smart_open import open
 
 from mesh_transformer.util import clip_by_global_norm
-
+import glob
 
 def parse_args():
     # Parse command line arguments
@@ -24,6 +24,8 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+def float_to_string(float_num):
+    return str(round(float_num, 1))
 
 if __name__ == "__main__":
     args = parse_args()
@@ -63,44 +65,98 @@ if __name__ == "__main__":
     mesh_shape = (jax.device_count() // cores_per_replica, cores_per_replica)
     devices = np.array(jax.devices()).reshape(mesh_shape)
 
+    tokenizer = transformers.GPT2TokenizerFast.from_pretrained('gpt2')
+
+
+
+    """
+    # a diverse set of prompts to test the effectiveness of the models
+    [Spongebob pets Gary]\nGary:  - to test if gary can meow
+    Squidward: Another day, another migraine - to test how much it's overfitting
+    Shrek: What are you doing in my swamp?! - to test out-of-sample characters
+    Patrick: I'm gunna lick your juicy asshole Spongebob!\nSpongebob: [on the verge of orgasm] Aww fuck yeah, Pat! Lick daddy's bussy like you mean it!\nSquidward: [shocked] - to test literotica lol
+    [The next morning, Patrick and Squidward are at the gym. They are shocked to see Larry injecting steroids] - guided scene generation
+    [Patrick won't stop farting]\nSquidward: [unamused] - potential to be funny
+    [The night before the Fry Cook Games, Spongebob and Sandy are working on their deadlifts. Larry and Plankton, now best friends, enter the gym. Mr. Krab's advice is still stuck in Spongebob's head. Patrick and Old Man Jenkins watch using their binoculars. Patrick's binoculars are backwards] - to test complex character interactions
+
+    # extra overfitting tests
+    Squidward: [says to himself] Open 24 hours a day. What a stupid idea. Who wants a Krabby Patty at 3 in the morning?\n[cuts to Patrick's bedroom.\nPatrick's alarm clock goes off.]\nPatrick: [turns off the alarm] Oh, boy! 3 A.M.! [whips out a Krabby Patty from under his blanket and starts to eat it; cuts back to The Krusty Krab] - strong overfitting test
+
+    Nosferatu: [as a bat]- ? overfitting test, out-of-sample factual knowledge test
+
+    <|endoftext|>\n - unprompted generation
+    """
+    
+    prompts = [
+        'Gary:',
+        'Squidward: Another day, another migraine',
+        'Shrek: What are you doing in my swamp?!',
+        "Patrick: I\'m gunna lick your juicy asshole Spongebob!\nSpongebob: [on the verge of orgasm] Aww fuck yeah, Pat! Lick daddy\'s bussy like you mean it!\nSquidward: [shocked]"
+        "[The next morning, Patrick and Squidward are at the gym. They are shocked to see Larry injecting steroids]",
+        "[Patrick won't stop farting]\nSquidward: [unamused]",
+        "[The night before the Fry Cook Games, Spongebob and Sandy are working on their deadlifts. Larry and Plankton, now best friends, enter the gym. Mr. Krab's advice is still stuck in Spongebob's head. Patrick and Old Man Jenkins watch using their binoculars. Patrick's binoculars are backwards]",
+        "Squidward: [says to himself] Open 24 hours a day. What a stupid idea. Who wants a Krabby Patty at 3 in the morning?\n[cuts to Patrick's bedroom.\nPatrick's alarm clock goes off.]\nPatrick: [turns off the alarm] Oh, boy! 3 A.M.! [whips out a Krabby Patty from under his blanket and starts to eat it; cuts back to The Krusty Krab]",
+        "Nosferatu: [as a bat]",
+        "<|endoftext|>\n"
+    ]
+
+
+    encoded_prompts = []
+    for prompt in prompts:
+        encoded_prompts.append(tokenizer.encode(prompt))
+
+
+    # sweep through different levels of dogma (ckpt_steps) and temperature
+    # should i sweep through top_p as well?
+    # i guess it cant hurt
     with open(f"gs://{bucket}/{model_dir}/meta.json", "r") as f:
         meta = json.load(f)
 
-    ckpt_step = meta["checkpoints"][-1]
-    print(f"using checkpoint {ckpt_step}")
+    checkpoint_dirs = glob.glob(f"gs://{bucket}/{model_dir}/step_*")
+    ckpt_steps = [ckpt_dir.split('step_').pop()[:-1] for ckpt_dir in checkpoint_dirs]
 
-    total_batch = per_replica_batch * jax.device_count() // cores_per_replica
-    with jax.experimental.maps.mesh(devices, ('dp', 'mp')):
-        network = CausalTransformer(params)
+    # sweep through checkpoints
+    for ckpt_step in ckpt_steps:
+        print(f"using checkpoint {ckpt_step}")
 
-        start = time.time()
-        network.state = read_ckpt(network.state, f"gs://{bucket}/{model_dir}/step_{ckpt_step}/", devices.shape[1])
-        print(f"network loaded in {time.time() - start:.06}s")
-
-        local_shards = max(jax.local_device_count() // mesh_shape[1], 1)
-        del network.state["opt_state"]
-        network.state = network.move_xmap(network.state, np.zeros(local_shards))
-
-        tokenizer = transformers.GPT2TokenizerFast.from_pretrained('gpt2')
-
-        while True:
-            context = input("Type input:")
-            tokens = tokenizer.encode(context)
+        total_batch = per_replica_batch * jax.device_count() // cores_per_replica
+        with jax.experimental.maps.mesh(devices, ('dp', 'mp')):
+            network = CausalTransformer(params)
 
             start = time.time()
+            network.state = read_ckpt(network.state, f"gs://{bucket}/{model_dir}/step_{ckpt_step}/", devices.shape[1])
+            print(f"network loaded in {time.time() - start:.06}s")
 
-            provided_ctx = len(tokens)
-            pad_amount = seq - provided_ctx
+            local_shards = max(jax.local_device_count() // mesh_shape[1], 1)
+            del network.state["opt_state"]
+            network.state = network.move_xmap(network.state, np.zeros(local_shards))
 
-            padded_tokens = np.pad(tokens, ((pad_amount, 0),)).astype(np.uint32)
-            batched_tokens = np.array([padded_tokens] * total_batch)
-            length = np.ones(total_batch, dtype=np.uint32) * len(tokens)
 
-            print("~~~~~~~~~~~~~~~GENERATING~~~~~~~~~~~~~~~")
-            output = network.generate(batched_tokens, length, 512, {"top_p": np.ones(total_batch) * 0.9,
-                                                                    "temp": np.ones(total_batch) * 0.75})
+            for tokens in encoded_prompts:
+                # sweep through temps, top_p
+                # this will produce wayyyy too many prompt-completions, but
+                for top_p_amount in np.arange(0, 1.1, 0.1):
+                    for temp_amount in np.arange(0, 2.1, 0.1):
+                        start = time.time()
 
-            for idx, o in enumerate(output[1][0][:, :, 0]):
-                print(f"sample {idx}: {repr(tokenizer.decode(o))}")
+                        provided_ctx = len(tokens)
+                        pad_amount = seq - provided_ctx
 
-            print(f"completion done in {time.time() - start:06}s")
+                        padded_tokens = np.pad(tokens, ((pad_amount, 0),)).astype(np.uint32)
+                        batched_tokens = np.array([padded_tokens] * total_batch)
+                        length = np.ones(total_batch, dtype=np.uint32) * len(tokens)
+
+                        print("~~~~~~~~~~~~~~~GENERATING~~~~~~~~~~~~~~~")
+                        output = network.generate(batched_tokens, length, pad_amount, {"top_p": np.ones(total_batch) * top_p_amount,
+                                                                        "temp": np.ones(total_batch) * temp_amount})
+                        outfile_path = f"samples/{ckpt_step}/temp-{float_to_string(temp_amount)}__top_p-{float_to_string(top_p_amount)}.txt"
+
+                        orig_input = tokenizer.decode(tokens)
+                        with open(outfile_path, 'w') as out:
+                            out.write(orig_input + output)
+
+                        for idx, o in enumerate(output[1][0][:, :, 0]):
+                            print(f"sample {idx}: {repr(tokenizer.decode(o))}")
+
+                        print(f"completion done in {time.time() - start:06}s")
+
