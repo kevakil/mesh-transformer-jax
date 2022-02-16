@@ -113,7 +113,9 @@ if __name__ == "__main__":
         meta = json.load(f)
 
     checkpoint_dirs = glob.glob(f"gs://{bucket}/{model_dir}/step_*")
+    print('chkpt dirs', checkpoint_dirs)
     ckpt_steps = [ckpt_dir.split('step_').pop()[:-1] for ckpt_dir in checkpoint_dirs]
+    print('chkpt dirs', ckpt_steps)
 
     # sweep through checkpoints
     for ckpt_step in ckpt_steps:
