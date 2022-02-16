@@ -123,7 +123,7 @@ if __name__ == "__main__":
     # shit, i forgot, cloud objects are techinically not stored in directories, so this theoretically wouldnt work. still there doesnt seem to be a builtin for this on gcs and i have no idea why...
     # annoying implementation because it depends on the config file being right
     ckpt_steps = [total_steps] + list(range(total_steps+1, 0, -ckpt_every))[1:]
-    ckpt_steps = list(findMiddle(ckpt_steps))
+    ckpt_steps = [findMiddle(ckpt_steps)]
     print('chkpt steps', ckpt_steps)
 
     # sweep through checkpoints
