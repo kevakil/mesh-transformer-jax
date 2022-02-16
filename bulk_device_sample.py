@@ -123,6 +123,8 @@ if __name__ == "__main__":
     # shit, i forgot, cloud objects are techinically not stored in directories, so this theoretically wouldnt work. still there doesnt seem to be a builtin for this on gcs and i have no idea why...
     # annoying implementation because it depends on the config file being right
     ckpt_steps = [total_steps] + list(range(total_steps+1, 0, -ckpt_every))[1:]
+
+    # i change this line to manually perform a binary search for the right number of epochs to use (balance between correctness and not overfitting too much)
     ckpt_steps = [findMiddle(ckpt_steps)]
     print('chkpt steps', ckpt_steps)
 
@@ -146,9 +148,13 @@ if __name__ == "__main__":
             # sweep through temps, top_p
             # this might produce too many prompt-completions, do the math!
             for top_p_amount in [0.5]: #[0.25, 0.5, 0.75]:# np.arange(0.2, 1.1, 0.2):
-                for temp_amount in [1]: #[0.5, 1, 1.5]:#np.arange(0.2, 2.1, 0.2):
+                for temp_amount in [0.5, 1, 1.5]:#np.arange(0.2, 2.1, 0.2):
                     outfile_path = f"samples/ckpt-{ckpt_step}/temp-{float_to_string(temp_amount)}/top_p-{float_to_string(top_p_amount)}.txt"
                     text = ''
+
+                    # create the directories if they dont exist
+                    os.makedirs(os.path.dirname(outfile_path), exist_ok=True)
+
                     with open(outfile_path, 'w') as out:
                         for tokens in encoded_prompts:
                             start = time.time()
@@ -165,8 +171,6 @@ if __name__ == "__main__":
                                                                             "temp": np.ones(total_batch) * temp_amount})
 
                             orig_input = tokenizer.decode(tokens)
-
-                            os.makedirs(os.path.dirname(outfile_path), exist_ok=True)
 
 
                             for idx, o in enumerate(output[1][0][:, :, 0]):
