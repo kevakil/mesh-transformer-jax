@@ -125,8 +125,7 @@ if __name__ == "__main__":
     ckpt_steps = [total_steps] + list(range(total_steps+1, 0, -ckpt_every))[1:]
 
     # i change this line to manually perform a binary search for the right number of epochs to use (balance between correctness and not overfitting too much)
-    ckpt_steps = ckpt_steps[len(ckpt_steps) // 4:]
-    ckpt_steps = [findMiddle(ckpt_steps)]
+    ckpt_steps = [27]
     print('chkpt steps', ckpt_steps)
 
     # sweep through checkpoints
