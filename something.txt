@@ -66,7 +66,6 @@ jsonlines==3.0.0
 jsonschema==4.4.0
 keras==2.6.0
 Keras-Preprocessing==1.1.2
-libtpu-nightly==0.1.dev20220128
 lm-dataformat==0.0.20
 Markdown==3.3.6
 MarkupSafe==2.0.1
