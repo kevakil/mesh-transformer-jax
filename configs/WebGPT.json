@@ -35,7 +35,7 @@
   "ckpt_every": 2480,
   "keep_every": 2480,
 
-  "name": "WebGPT-5-epochs",
-  "wandb_project": "GPT-J-6b-WebGPT",
+  "name": "WebGPT-5-epochs-ex760M",
+  "wandb_project": "GPT-J-6b-WebGPT-ex760M",
   "comment": ""
 }
