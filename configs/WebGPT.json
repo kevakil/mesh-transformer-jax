@@ -12,12 +12,12 @@
   "per_replica_batch": 1,
   "gradient_accumulation_steps": 32,
 
-  "warmup_steps": 233,
-  "anneal_steps": 2867,
+  "warmup_steps": 150,
+  "anneal_steps": 1845,
   "lr": 1.75e-4,
   "end_lr": 1.75e-5,
   "weight_decay": 0.1,
-  "total_steps": 3100,
+  "total_steps": 1995,
 
   "tpu_size": 8,
 
@@ -30,12 +30,12 @@
   "eval_harness_tasks": [
   ],
 
-  "val_batches": 19833,
+  "val_batches": 12756,
   "val_every": 99999999999,
-  "ckpt_every": 2480,
-  "keep_every": 2480,
+  "ckpt_every": 1595,
+  "keep_every": 1595,
 
-  "name": "WebGPT-5-epochs-ex760M",
-  "wandb_project": "GPT-J-6b-WebGPT-ex760M",
+  "name": "FIXED WebGPT-5-epochs-ex760M",
+  "wandb_project": "FIXED GPT-J-6b-WebGPT-ex760M",
   "comment": ""
 }
