@@ -47,127 +47,73 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+"""
+say we use the kaggle tpu,
+the /kaggle/working max size is only 20GB, but GPT-J weights are ~30GB
 
+so, if i use the kaggle tpu, it must output to somewhere else.
+i could enable GCP and just use it for very-short term storage during runs!
+    DUH itll basically cost nothing and then I wont need to worry about connecting to wandb/azure/etc
+"""
 def save(network, step, bucket, path, mp, aux=None, keep_n=3, delete_old=True, useWandb=False):
     assert path
-    
-    if useWandb:
-        print('using wandb')
-        pass
-        if aux is None:
-            aux = {}
 
-        try:
-            weights_file = wandb.restore(f"{path}+/meta.json")
+    client = storage.Client()
 
-            with open(f"gs://{bucket}/{path}/meta.json", "r") as f:
-                meta = json.load(f)
-        except:
-            # create metadata file
-            with open(f"gs://{bucket}/{path}/meta.json", "w") as f:
-                json.dump({
-                    "step": 0,
-                    "checkpoints": [],
-                    "aux": {}
-                }, f)
+    if aux is None:
+        aux = {}
 
-        # do sharded checkpoint writing
-        start = time.time()
-        res = []
-        for shard_id in range(mp):
-            write_ckpt(network.state, f"gs://{bucket}/{path}/step_{step}/", shard_id)
-
-        print(f"Wrote checkpoint in {time.time() - start:.06}s")
-
+    try:
         with open(f"gs://{bucket}/{path}/meta.json", "r") as f:
             meta = json.load(f)
-
-        meta["step"] = step
-        meta["checkpoints"].append(step)
-        all_aux = meta.get("aux", {})
-
-        while len(meta["checkpoints"]) > keep_n:
-            print('checkpoints:', len(meta['checkpoints']))
-            print('keep_n:', keep_n)
-            ckpt_to_delete = meta["checkpoints"].pop(0)
-
-            try:
-                del all_aux[str(ckpt_to_delete)]
-            except:
-                print(f"failed to delete the aux state for {step}")
-
-            if delete_old:
-                print(f"deleting checkpoint {ckpt_to_delete}")
-                for blob in client.list_blobs(bucket, prefix=f"{path}/step_{ckpt_to_delete}/"):
-                    # print(f"deleting {blob.name}")
-                    assert path in blob.name
-                    blob.delete()
-            else:
-                print(f"keeping checkpoint {ckpt_to_delete}")
-
-        all_aux[step] = aux
-        meta["aux"] = all_aux
-
+    except:
+        # create metadata file
         with open(f"gs://{bucket}/{path}/meta.json", "w") as f:
-            json.dump(meta, f)
-    else:
-        
-        client = storage.Client()
+            json.dump({
+                "step": 0,
+                "checkpoints": [],
+                "aux": {}
+            }, f)
 
-        if aux is None:
-            aux = {}
+    # do sharded checkpoint writing
+    start = time.time()
+    res = []
+    for shard_id in range(mp):
+        write_ckpt(network.state, f"gs://{bucket}/{path}/step_{step}/", shard_id)
+
+    print(f"Wrote checkpoint in {time.time() - start:.06}s")
+
+    with open(f"gs://{bucket}/{path}/meta.json", "r") as f:
+        meta = json.load(f)
+
+    meta["step"] = step
+    meta["checkpoints"].append(step)
+    all_aux = meta.get("aux", {})
+
+    while len(meta["checkpoints"]) > keep_n:
+        print('checkpoints:', len(meta['checkpoints']))
+        print('keep_n:', keep_n)
+        ckpt_to_delete = meta["checkpoints"].pop(0)
 
         try:
-            with open(f"gs://{bucket}/{path}/meta.json", "r") as f:
-                meta = json.load(f)
+            del all_aux[str(ckpt_to_delete)]
         except:
-            # create metadata file
-            with open(f"gs://{bucket}/{path}/meta.json", "w") as f:
-                json.dump({
-                    "step": 0,
-                    "checkpoints": [],
-                    "aux": {}
-                }, f)
+            print(f"failed to delete the aux state for {step}")
 
-        # do sharded checkpoint writing
-        start = time.time()
-        res = []
-        for shard_id in range(mp):
-            write_ckpt(network.state, f"gs://{bucket}/{path}/step_{step}/", shard_id)
+        if delete_old:
+            print(f"deleting checkpoint {ckpt_to_delete}")
+            for blob in client.list_blobs(bucket, prefix=f"{path}/step_{ckpt_to_delete}/"):
+                # print(f"deleting {blob.name}")
+                assert path in blob.name
+                blob.delete()
+        else:
+            print(f"keeping checkpoint {ckpt_to_delete}")
 
-        print(f"Wrote checkpoint in {time.time() - start:.06}s")
+    all_aux[step] = aux
+    meta["aux"] = all_aux
 
-        with open(f"gs://{bucket}/{path}/meta.json", "r") as f:
-            meta = json.load(f)
-
-        meta["step"] = step
-        meta["checkpoints"].append(step)
-        all_aux = meta.get("aux", {})
-
-        while len(meta["checkpoints"]) > keep_n:
-            print('checkpoints:', len(meta['checkpoints']))
-            print('keep_n:', keep_n)
-            ckpt_to_delete = meta["checkpoints"].pop(0)
-
-            try:
-                del all_aux[str(ckpt_to_delete)]
-            except:
-                print(f"failed to delete the aux state for {step}")
-
-            if delete_old:
-                print(f"deleting checkpoint {ckpt_to_delete}")
-                for blob in client.list_blobs(bucket, prefix=f"{path}/step_{ckpt_to_delete}/"):
-                    # print(f"deleting {blob.name}")
-                    assert path in blob.name
-                    blob.delete()
-            else:
-                print(f"keeping checkpoint {ckpt_to_delete}")
-
-        all_aux[step] = aux
-        meta["aux"] = all_aux
-
-        with open(f"gs://{bucket}/{path}/meta.json", "w") as f:
-            json.dump(meta, f)
+    with open(f"gs://{bucket}/{path}/meta.json", "w") as f:
+        json.dump(meta, f)
 
 
 def train_step(network, data):
